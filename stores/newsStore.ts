@@ -15,11 +15,10 @@ export const useNewsStore = defineStore("newsStore", () => {
     const getNews = async (params = emptyQuery) => {
         loader.value = true;
 
-        console.log("fetch data");
-        // const base = "/api/news";
-        // const query = `${base}?search=${params.value}`;
-        // const data = await $fetch(query);
-        // news.value = data as NewsItem[];
+        const base = "/api/news";
+        const query = `${base}?search=${params.value}`;
+        const data = await $fetch(query);
+        news.value = data as NewsItem[];
 
         loader.value = false;
     };
