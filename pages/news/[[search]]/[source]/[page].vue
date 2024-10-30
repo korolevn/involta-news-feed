@@ -1,6 +1,8 @@
 <template>
+    <Skeleton v-if="newsStore.loader" v-for="newsItem in newsList.value" />
     <NewsCard
         :disp="props.disp"
+        v-else
         v-for="newsItem in newsList.value"
         :item="newsItem"
     />
