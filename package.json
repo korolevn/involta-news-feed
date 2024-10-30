@@ -1,30 +1,34 @@
 {
-  "name": "nuxt-app",
-  "private": true,
-  "type": "module",
-  "scripts": {
-    "build": "nuxt build",
-    "dev:server": "npx --yes listhen -w --open ./proxy-server/api.ts",
-    "dev": "nuxt dev",
-    "generate": "nuxt generate",
-    "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
-  },
-  "dependencies": {
-    "@nuxt/fonts": "^0.10.2",
-    "@nuxt/ui": "^2.18.7",
-    "@nuxtjs/tailwindcss": "^6.12.2",
-    "@pinia/nuxt": "^0.5.5",
-    "@vueuse/core": "^10.11.0",
-    "@vueuse/nuxt": "^10.11.0",
-    "h3": "^1.13.0",
-    "moment": "^2.30.1",
-    "nuxt": "^3.13.2",
-    "pinia": "^2.2.4",
-    "rss-parser": "^3.13.0",
-    "url": "^0.11.4",
-    "vue": "latest",
-    "vue-router": "latest"
-  },
-  "packageManager": "pnpm@9.12.2+sha512.22721b3a11f81661ae1ec68ce1a7b879425a1ca5b991c975b074ac220b187ce56c708fe5db69f4c962c989452eee76c82877f4ee80f474cebd61ee13461b6228"
+    "name": "nuxt-app",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "build": "nuxt build",
+        "dev:server": "npx --yes listhen -w --open ./proxy-server/api.ts",
+        "dev": "nuxt dev",
+        "generate": "nuxt generate",
+        "preview": "nuxt preview",
+        "postinstall": "nuxt prepare"
+    },
+    "dependencies": {
+        "@nuxt/fonts": "^0.10.2",
+        "@nuxt/ui": "^2.18.7",
+        "@nuxtjs/tailwindcss": "^6.12.2",
+        "@pinia/nuxt": "^0.5.5",
+        "@vueuse/core": "^10.11.0",
+        "@vueuse/nuxt": "^10.11.0",
+        "h3": "^1.13.0",
+        "listhen": "^1.9.0",
+        "moment": "^2.30.1",
+        "nuxt": "^3.13.2",
+        "pinia": "^2.2.4",
+        "rss-parser": "^3.13.0",
+        "url": "^0.11.4",
+        "vue": "latest",
+        "vue-router": "latest"
+    },
+    "packageManager": "pnpm@9.12.2+sha512.22721b3a11f81661ae1ec68ce1a7b879425a1ca5b991c975b074ac220b187ce56c708fe5db69f4c962c989452eee76c82877f4ee80f474cebd61ee13461b6228",
+    "devDependencies": {
+        "prettier": "3.3.3"
+    }
 }
