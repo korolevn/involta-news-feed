@@ -1,6 +1,12 @@
 <template>
-    <div>
-        <NuxtRouteAnnouncer />
-        <NuxtWelcome />
-    </div>
+    <NuxtPage></NuxtPage>
 </template>
+
+<script setup lang="ts">
+useHead({
+    title: "Список новостей",
+    bodyAttrs: {
+        class: "bg-main",
+    },
+});
+</script>
