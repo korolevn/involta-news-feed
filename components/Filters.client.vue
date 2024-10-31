@@ -3,6 +3,7 @@
         <div class="flex gap-x-4 font-bold text-sm">
             <NuxtLink
                 v-for="filter in filters"
+                :key="filter.to"
                 :class="{ 'text-blue': routeFilter === filter.to }"
                 :to="`/news/${searchQuery}${filter.to}/1`"
             >

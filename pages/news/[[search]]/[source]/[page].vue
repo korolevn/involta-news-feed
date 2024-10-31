@@ -1,9 +1,14 @@
 <template>
-    <Skeleton v-if="newsStore.loader" v-for="newsItem in newsList.value" />
+    <Skeleton
+        v-if="newsStore.loader"
+        v-for="newsItem in newsList.value"
+        :key="newsItem.title"
+    />
     <NewsCard
         :disp="props.disp"
         v-else
         v-for="newsItem in newsList.value"
+        :key="newsItem.link"
         :item="newsItem"
     />
     <Pagination

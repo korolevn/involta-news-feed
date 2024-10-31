@@ -4,6 +4,7 @@
     >
         <NuxtLink
             v-for="page in pages.value"
+            :key="page"
             :class="{ 'text-blue': page === currentPageNumber }"
             :to="`/news/${searchQuery}${source}/${page}`"
         >
