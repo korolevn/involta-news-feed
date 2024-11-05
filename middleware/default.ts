@@ -1,5 +1,5 @@
 export default defineNuxtRouteMiddleware((to, from) => {
-    if (to.path === "/") {
-        return navigateTo("/news/all/1");
+    if (!to.query.page) {
+        return navigateTo("/?page=1");
     }
 });
