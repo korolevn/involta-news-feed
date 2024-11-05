@@ -13,5 +13,8 @@ useHead({
     bodyAttrs: {
         class: "bg-main",
     },
+    htmlAttrs: {
+        class: "scrollbar-hide",
+    },
 });
 </script>
