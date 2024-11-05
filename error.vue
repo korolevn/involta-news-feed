@@ -18,7 +18,7 @@
 const error = useError();
 const handleError = () => {
     clearError({
-        redirect: "/news/all/1",
+        redirect: "/",
     });
 };
 </script>
