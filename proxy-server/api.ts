@@ -7,64 +7,126 @@ import {
     getQuery,
     defineEventHandler,
 } from "h3";
-import type { NewsItem } from "~/types/common";
+import type { INewsItem } from "~/types/common";
 const Parser = require("rss-parser");
+
+interface ISourceHostnames {
+    [key: string]: string;
+}
+
+interface IQuery {
+    query: {
+        search: string;
+        source: string;
+        page: number;
+    };
+}
+
+const MOS_FEED_HOSTNAME = "https://www.mos.ru";
+const RAM_FEED_HOSTNAME = "https://news.rambler.ru";
+
+const FEED_LIST = [
+    `${MOS_FEED_HOSTNAME}/rss/`,
+    `${RAM_FEED_HOSTNAME}/rss/world/`,
+];
+
+const SOURCE_HOSTNAMES: ISourceHostnames = {
+    mos: MOS_FEED_HOSTNAME,
+    ram: RAM_FEED_HOSTNAME,
+};
+
+const NEWS_PER_PAGE = 4;
 
 export const app = createApp();
 
-const FEED_LIST = [
-    "https://www.mos.ru/rss/",
-    "https://news.rambler.ru/rss/world/",
-];
-
 const router = createRouter();
+const parser = new Parser();
+
+const feedRequests = FEED_LIST.map((feed) => {
+    return parser.parseURL(feed);
+});
+
+// перемешивает массив, чтобы на странице были материалы с разных rss - лент
+const shuffle = (arr: INewsItem[]) => {
+    return arr.sort(() => Math.random() - 0.5);
+};
+
+const data = Promise.all(feedRequests)
+    .then((res) => {
+        const newsArray = res.map((newsFeed) => newsFeed.items).flat();
+        return shuffle(newsArray);
+    })
+    .catch((error) => {
+        throw createError({
+            status: 400,
+            statusMessage: "Bad Request",
+            message: "Неверный запрос",
+        });
+    });
 
 router.get(
     "/",
-    defineEventHandler<{ query: { search: string } }>((event) => {
-        let parser = new Parser();
+    defineEventHandler<IQuery>(async (event) => {
+        const { search, source, page } = getQuery(event);
 
-        const feedRequests = FEED_LIST.map((feed) => {
-            return parser.parseURL(feed);
-        });
+        let newsArray: INewsItem[] = await data;
+        console.log(newsArray);
 
-        const data = Promise.all(feedRequests)
-            .then((res) => {
-                return res;
-            })
-            .catch((error) => {
-                throw createError({
-                    status: 400,
-                    statusMessage: "Bad Request",
-                    message: "Неверный запрос",
-                });
-            });
+        if (search) {
+            console.log("from search");
+            console.log(search);
+            const queryParamWords = search.toLowerCase().split(" ");
 
-        const query = getQuery(event);
+            const findQueryParamsWords = (
+                newsItemContent: string | undefined,
+                queryWord: string,
+            ) => {
+                if (!newsItemContent) return;
+                return newsItemContent
+                    .toLowerCase()
+                    .includes(queryWord.toLowerCase());
+            };
 
-        const newsArray = data
-            .then((res) =>
-                res.map((r) => {
-                    return r.items.filter(
-                        (item: NewsItem) =>
-                            item.title
-                                .toLowerCase()
-                                .includes(query.search.toLowerCase()) ||
-                            item.content
-                                ?.toLowerCase()
-                                .includes(query.search.toLowerCase()),
-                    );
-                }),
-            )
-            .then((res) => res.reduce((prev, next) => [...prev, ...next]))
-            .then((res) => shuffle(res));
+            const filteredWithSearchQuery = newsArray.filter(
+                (newsItem: INewsItem) =>
+                    queryParamWords.some(
+                        (word) =>
+                            findQueryParamsWords(newsItem.title, word) ||
+                            findQueryParamsWords(newsItem?.content, word),
+                    ),
+            );
 
-        // перемешивает массив, чтобы на странице были материалы с разных rss - лент
-        const shuffle = (arr: NewsItem[]) => {
-            return arr.sort(() => Math.random() - 0.5);
+            newsArray = filteredWithSearchQuery;
+        }
+
+        if (source) {
+            const filterWithSource = (link: string, source: string) => {
+                return new URL(link).origin === source;
+            };
+            const filteredWithSource = newsArray.filter((newsItem: INewsItem) =>
+                filterWithSource(newsItem.link, SOURCE_HOSTNAMES[source]),
+            );
+
+            newsArray = filteredWithSource;
+        }
+
+        const countPages = (newsArray: INewsItem[]) => {
+            return Math.ceil((newsArray.length || 0) / NEWS_PER_PAGE);
+        };
+        const pagesTotal = countPages(newsArray);
+
+        const currentPage = !(page > pagesTotal || page < 1) ? page : 1;
+        const startIndex = (currentPage - 1) * NEWS_PER_PAGE;
+        const endIndex = currentPage * NEWS_PER_PAGE;
+
+        newsArray = newsArray.slice(startIndex, endIndex);
+
+        const result = {
+            news: newsArray,
+            pagesTotal,
         };
 
-        return newsArray;
+        return result;
     }),
 );
 
