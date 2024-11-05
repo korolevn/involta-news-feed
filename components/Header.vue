@@ -8,7 +8,7 @@
             </h1>
             <button
                 class="flex justify-center items-center ml-[30px] w-10 h-10 rounded-full bg-white text-blue shadow-xs"
-                @click="reset()"
+                @click="reset"
             >
                 <UiIcon icon-name="reset-icon" :width="20" :height="16" />
             </button>
@@ -18,9 +18,8 @@
                 class="h-10 w-full md:h-auto min-w-80 pl-3 pr-10 rounded shadow-xs focus:outline-none focus:ring focus:border-blue"
                 type="text"
                 placeholder="Введите запрос"
-                v-model="query"
+                v-model="searchQuery"
                 ref="search"
-                @input="newsStore.setSearchQuery(query)"
             />
             <button class="absolute flex top-2/4 right-3 -translate-y-2/4">
                 <UiIcon icon-name="search-icon" />
@@ -30,30 +29,20 @@
 </template>
 
 <script setup lang="ts">
-import { useNewsStore } from "~/stores/newsStore";
 import UiIcon from "./UiIcon.vue";
 
-const query = ref("");
-const newsStore = useNewsStore();
-const route = useRoute();
-const { source, page } = route.params;
+const searchQuery = ref("");
+
 const router = useRouter();
+const route = useRoute();
+const { source } = route.query;
 
 const reset = () => {
-    router.push({
-        path: `/news/all/1`,
-    });
-
-    newsStore.getNews();
-    newsStore.setSearchQuery();
+    searchQuery.value = "";
+    navigateTo("/");
 };
 
 const submit = () => {
-    const path = query.value ? `${query.value}/` : "";
-
-    router.push({
-        path: `/news/${path}${source}/${page}`,
-    });
-    newsStore.getNews(query);
+    router.push({ query: { search: searchQuery.value, source, page: 1 } });
 };
 </script>

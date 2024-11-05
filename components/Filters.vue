@@ -4,8 +4,14 @@
             <NuxtLink
                 v-for="filter in filters"
                 :key="filter.to"
-                :class="{ 'text-blue': routeFilter === filter.to }"
-                :to="`/news/${searchQuery}${filter.to}/1`"
+                :class="{ 'text-blue': currentSource === filter.to }"
+                :to="{
+                    query: {
+                        search: route.query.search,
+                        source: filter.to,
+                        page: 1,
+                    },
+                }"
             >
                 {{ filter.text }}
             </NuxtLink>
@@ -58,20 +64,11 @@
 </template>
 
 <script setup lang="ts">
-const newsStore = useNewsStore();
-const route = useRoute();
-const searchQuery = computed(() => {
-    return newsStore.searchQuery ? `${newsStore.searchQuery}/` : "";
-});
+import type { INewsFilter } from "~/types/news";
 
-const routeFilter = computed(() => route.params.source);
-
-const display = defineModel("display");
-
-const filters = ref([
+const filters = ref<INewsFilter[]>([
     {
         text: "Все",
-        to: "all",
     },
     {
         text: "Rambler.ru",
@@ -82,4 +79,9 @@ const filters = ref([
         to: "mos",
     },
 ]);
+
+const display = defineModel("display");
+
+const route = useRoute();
+const currentSource = computed(() => route.query.source);
 </script>
