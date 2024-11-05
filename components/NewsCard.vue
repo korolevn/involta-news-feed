@@ -65,12 +65,12 @@ import type { INewsItem } from "~/types/common";
 
 type Props = {
     item: INewsItem;
+    display: string;
 };
 const props = defineProps<Props>();
 
-const display = useCookie("display");
-const isFeed = computed(() => display.value === "feed");
-const isGrid = computed(() => display.value === "grid");
+const isFeed = computed(() => props.display === "feed");
+const isGrid = computed(() => props.display === "grid");
 
 const sourceURL = computed(() => new URL(props.item.link).hostname);
 const sourceLink = `https://${sourceURL.value}`;

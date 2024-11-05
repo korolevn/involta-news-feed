@@ -8,8 +8,16 @@
                 'flex flex-wrap md:grid grid-cols-2': display === 'grid',
             }"
         >
-            <LazyNewsCard
+            <Skeleton
+                v-if="isLoading"
                 v-for="newsItem in newsStore.news"
+                :display="display!"
+                :key="newsItem.title"
+            />
+            <LazyNewsCard
+                v-else
+                v-for="newsItem in newsStore.news"
+                :display="display!"
                 :key="newsItem.link"
                 :item="newsItem"
             />
@@ -30,7 +38,7 @@ display.value = display.value || defaultDisplay;
 const route = useRoute();
 
 const fetchNews = async () => {
-    const { data, error } = await useAsyncData(
+    const { data, error, status } = await useAsyncData(
         "news",
         async () => {
             return {
@@ -47,14 +55,16 @@ const fetchNews = async () => {
     if (error.value) {
         throw createError({
             statusCode: 500,
-            statusMessage: `Невозможно получить данные`,
+            statusMessage: "Невозможно получить данные",
         });
     }
 
-    return data;
+    return { data, status };
 };
 
-await fetchNews();
+const { status } = await fetchNews();
+const isLoading = computed(() => status.value === "pending");
+
 watch(route, async () => {
     await fetchNews();
 });
