@@ -37,9 +37,9 @@ const router = useRouter();
 const route = useRoute();
 const { source } = route.query;
 
-const reset = () => {
+const reset = async () => {
     searchQuery.value = "";
-    navigateTo("/");
+    await navigateTo("/");
 };
 
 const submit = () => {
